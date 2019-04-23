@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <properties resource="jdbc.properties"></properties>
+
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <package name="com.jsc.model"/>
+        <!--<package name="com.jsc.model"/>-->
+        <!--<typeAlias type="com.jsc.mapper.IUserMapper" alias="iuserMapper"/>-->
+    </typeAliases>
+    <!-- 配置mybatis的环境信息 -->
+    <environments default="development">
+
+        <environment id="development">
+            <!-- 配置JDBC事务控制，由mybatis进行管理 -->
+            <transactionManager type="JDBC"></transactionManager>
+
+            <!-- 配置数据源，采用dbcp连接池 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatisj?useUnicode=true&amp;characterEncoding=utf8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!--<mapper resource="com/jsc/mapper/IOrdersMapper.xml"/>-->
+        <package name="com.jsc.mapper"/>
+        <!--<mapper resource="com/jsc/mapper/IUserMapper.xml"/>-->
+    </mappers>
+</configuration>
+

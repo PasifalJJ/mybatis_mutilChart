@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsc.mapper.IOrdersMapper">
+    <!--
+        根据商品ID查找定单信息，包括用户名和地址
+        需要将结果封装到user和orders中
+        输出结果使用resultMap
+    -->
+    <resultMap id="OrdersRstMap" type="user">
+        <id column="u_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="address" property="address"/>
+
+        <collection property="ordersList" ofType="orders">
+            <id column="os_id" property="id"/>
+            <result column="number" property="number"/>
+            <result column="createtime" property="createtime"/>
+            <result column="note" property="note"/>
+        </collection>
+    </resultMap>
+
+    <select id="findOrdersByItemid" parameterType="int" resultMap="OrdersRstMap">
+        select
+            u.id u_id,u.username,u.address,
+            os.id os_id,os.number,os.createtime,os.note,
+            ot.id ot_id,ot.items_num,
+            i.id i_id,i.name,i.price
+        from
+            items i,
+            orderdetail ot,
+            orders os,
+            user u
+        where
+            i.id=ot.items_id and
+            ot.orders_id=os.id and
+            os.user_id=u.id and
+            i.id=#{id};
+    </select>
+
+    <resultMap id="OrdersByOrdersIdRstMap" type="user">
+        <id column="u_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="address" property="address"/>
+           <collection property="ordersList" ofType="orders">
+               <id column="os_id" property="id"/>
+               <result column="createtime" property="createtime"/>
+               <result column="number" property="number"/>
+
+               <collection property="orderdetails" ofType="Orderdetail">
+                   <id column="ot_id" property="id"/>
+                   <result column="items_id" property="items_id"/>
+                   <result column="items_num" property="items_num"/>
+               </collection>
+           </collection>
+    </resultMap>
+
+    <select id="findOrdersByOrdersId" parameterType="int" resultMap="OrdersByOrdersIdRstMap">
+        select
+          u.id u_id,u.username,u.address,
+          os.id os_id,os.createtime,os.number,
+          ot.id ot_id,ot.items_id,ot.items_num
+        from
+          user u, orders os, orderdetail ot
+        where
+          ot.orders_id = os.id and
+          os.user_id=u.id and
+          os.id=#{id};
+    </select>
+
+    <resultMap id="userAndItemsRstMap" type="user">
+        <id column="u_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="sex" property="sex"/>
+        <result column="address" property="address"/>
+        <collection property="ordersList" ofType="orders">
+            <collection property="orderdetails" ofType="Orderdetail">
+                <association property="items" javaType="items">
+                    <id column="i_id" property="id"/>
+                    <result column="name" property="name"/>
+                    <result column="price" property="price"/>
+                    <result column="createtime" property="createtime"/>
+                </association>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findUserAndItems" resultMap="userAndItemsRstMap">
+        select
+          u.id u_id,u.username,u.sex,u.address,
+          i.id i_id,i.name,i.price,i.createtime
+        from
+          user u,orders os,orderdetail ot,items i
+        where
+          u.id=os.user_id and
+          os.id=ot.orders_id and
+          ot.items_id=i.id ;
+    </select>
+
+</mapper>
